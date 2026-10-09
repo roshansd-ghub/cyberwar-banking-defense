@@ -8,6 +8,25 @@ The project analyzes simulated banking events, assigns risk levels, provides rea
 
 **Note:** This is a learning and portfolio project. It does not connect to real banking systems and is not intended for production fraud detection.
 
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Banking Events CSV] --> B[Streamlit Dashboard - app.py]
+    B --> C[Dataset Validation - validate_data.py]
+    B --> D[Risk Detection - detector.py]
+    C --> E[Validated Events]
+    E --> D
+    D --> F[Risk Classification]
+    F --> G[Risk Overview]
+    F --> H[Incident Timeline]
+    F --> I[Recommended Actions]
+    G --> J[CSV Report Download]
+    H --> J
+    I --> J
+```
+
 ## Features
 
 - **Rule-based detection:** Identifies events involving repeated failed login attempts, high-value transactions, and unknown countries.
