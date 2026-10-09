@@ -135,6 +135,58 @@ with st.expander("View evaluation counts"):
     st.write(f"False negatives: {fn}")
     st.write(f"True negatives: {tn}")
 
+st.subheader("Confusion Matrix")
+
+confusion_matrix = pd.DataFrame(
+    [
+        [tn, fp],
+        [fn, tp],
+    ],
+    index=["Actual normal", "Actual suspicious"],
+    columns=["Predicted normal", "Predicted suspicious"],
+)
+
+st.dataframe(
+    confusion_matrix,
+    use_container_width=True,
+)
+
+st.caption(
+    "Counts are based on the manually labelled synthetic dataset. "
+    "They are not estimates of real banking fraud performance."
+)
+
+st.subheader("Expected vs detected events")
+
+comparison = pd.DataFrame(
+    {
+        "Expected label": [
+            "Normal",
+            "Suspicious",
+        ],
+        "Count": [
+            int((~df["actual_suspicious"]).sum()),
+            int(df["actual_suspicious"].sum()),
+        ],
+    }
+)
+
+st.bar_chart(
+    comparison.set_index("Expected label")
+)
+
+predicted_counts = (
+    df["predicted_suspicious"]
+    .map({True: "Flagged", False: "Not flagged"})
+    .value_counts()
+)
+
+st.write("**Detection output summary**")
+st.dataframe(
+    predicted_counts.rename("Events").to_frame(),
+    use_container_width=True,
+)
+
 st.subheader("Security event overview")
 
 chart_data = (
