@@ -1,5 +1,5 @@
 # Cyberwar Banking Defense
-**Live Demo:** [Open Cyberwar Banking Defense](PASTE_YOUR_STREAMLIT_URL_HERE)
+**Live Demo:** [Open Cyberwar Banking Defense](https://cyberwar-banking-defense.streamlit.app/)
 ## Overview
 
 Cyberwar Banking Defense is a Python-based educational project that demonstrates how suspicious banking activity can be identified using rule-based detection, dataset validation, and an interactive Streamlit dashboard.
