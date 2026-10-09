@@ -14,75 +14,12 @@ st.title("Cyberwar Banking Defense")
 st.caption("Banking activity monitoring and security alert simulation")
 
 # Fictional events created for testing the detection rules.
-events = [
-    {
-        "event_id": "EVT-001",
-        "account": "ACC-1001",
-        "event_type": "login",
-        "failed_logins": 1,
-        "amount": 0,
-        "country": "India",
-        "status": "Success",
-    },
-    {
-        "event_id": "EVT-002",
-        "account": "ACC-1002",
-        "event_type": "login",
-        "failed_logins": 6,
-        "amount": 0,
-        "country": "India",
-        "status": "Failed",
-    },
-    {
-        "event_id": "EVT-003",
-        "account": "ACC-1003",
-        "event_type": "transaction",
-        "failed_logins": 0,
-        "amount": 125000,
-        "country": "India",
-        "status": "Completed",
-    },
-    {
-        "event_id": "EVT-004",
-        "account": "ACC-1004",
-        "event_type": "transaction",
-        "failed_logins": 0,
-        "amount": 2500,
-        "country": "India",
-        "status": "Completed",
-    },
-    {
-        "event_id": "EVT-005",
-        "account": "ACC-1005",
-        "event_type": "login",
-        "failed_logins": 4,
-        "amount": 0,
-        "country": "Unknown",
-        "status": "Failed",
-    },
-    {
-        "event_id": "EVT-006",
-        "account": "ACC-1006",
-        "event_type": "transaction",
-        "failed_logins": 0,
-        "amount": 75000,
-        "country": "India",
-        "status": "Completed",
-    },
-    {
-        "event_id": "EVT-007",
-        "account": "ACC-1007",
-        "event_type": "login",
-        "failed_logins": 0,
-        "amount": 0,
-        "country": "India",
-        "status": "Success",
-    },
-]
 
-df = pd.DataFrame(events)
+from pathlib import Path
 
+DATA_FILE = Path(__file__).parent / "data" / "banking_events.csv"
 
+df = pd.read_csv(DATA_FILE)
 df[["risk_level", "alert_reason"]] = pd.DataFrame(
     df.apply(
         lambda row: classify_event(row),
@@ -92,6 +29,62 @@ df[["risk_level", "alert_reason"]] = pd.DataFrame(
     columns=["risk_level", "alert_reason"],
 )
 
+# Evaluate the rules against the synthetic reference labels.
+df["expected_label"] = (
+    df["expected_label"].astype(str).str.strip().str.lower()
+)
+
+valid_labels = {"normal", "suspicious"}
+
+if not set(df["expected_label"]).issubset(valid_labels):
+    st.error("expected_label must contain only normal or suspicious.")
+    st.stop()
+
+df["actual_suspicious"] = df["expected_label"] == "suspicious"
+df["predicted_suspicious"] = df["risk_level"] != "Low"
+
+tp = int(
+    (df["actual_suspicious"] & df["predicted_suspicious"]).sum()
+)
+fp = int(
+    (~df["actual_suspicious"] & df["predicted_suspicious"]).sum()
+)
+fn = int(
+    (df["actual_suspicious"] & ~df["predicted_suspicious"]).sum()
+)
+tn = int(
+    (~df["actual_suspicious"] & ~df["predicted_suspicious"]).sum()
+)
+
+precision = tp / (tp + fp) if tp + fp else 0.0
+recall = tp / (tp + fn) if tp + fn else 0.0
+false_positive_rate = fp / (fp + tn) if fp + tn else 0.0
+
+# Validate the columns required by the detection engine.
+required_columns = {
+    "event_id",
+    "account",
+    "event_type",
+    "failed_logins",
+    "amount",
+    "country",
+    "status",
+    "expected_label",
+}
+
+missing_columns = required_columns.difference(df.columns)
+
+if missing_columns:
+    st.error(
+        "Dataset is missing columns: "
+        + ", ".join(sorted(missing_columns))
+    )
+    st.stop()
+
+df["failed_logins"] = pd.to_numeric(
+    df["failed_logins"], errors="raise"
+)
+df["amount"] = pd.to_numeric(df["amount"], errors="raise")
 
 st.sidebar.header("Investigation filters")
 
@@ -121,6 +114,26 @@ col1.metric("Total events", len(df))
 col2.metric("Alerts", alert_count)
 col3.metric("High risk", high_count)
 col4.metric("Medium risk", medium_count)
+
+st.subheader("Detection performance")
+
+m1, m2, m3 = st.columns(3)
+
+m1.metric("Precision", f"{precision:.1%}")
+m2.metric("Recall", f"{recall:.1%}")
+m3.metric("False-positive rate", f"{false_positive_rate:.1%}")
+
+st.caption(
+    "Evaluation uses manually assigned synthetic labels. "
+    "Results are illustrative and do not represent real-world "
+    "banking fraud detection performance."
+)
+
+with st.expander("View evaluation counts"):
+    st.write(f"True positives: {tp}")
+    st.write(f"False positives: {fp}")
+    st.write(f"False negatives: {fn}")
+    st.write(f"True negatives: {tn}")
 
 st.subheader("Security event overview")
 
