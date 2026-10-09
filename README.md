@@ -1,117 +1,139 @@
-
 # Cyberwar Banking Defense
 
-A small Python project for exploring banking cybersecurity
-through simulated events, rule-based detection, and a
-security monitoring dashboard.
+## Overview
 
-## Project Overview
+Cyberwar Banking Defense is a Python-based educational project that demonstrates how suspicious banking activity can be identified using rule-based detection, dataset validation, and an interactive Streamlit dashboard.
 
-Cyberwar Banking Defense demonstrates how a basic defensive
-monitoring system can identify events that deserve further
-investigation.
+The project analyzes simulated banking events, assigns risk levels, provides reasons for alerts, and suggests investigation actions.
 
-The application processes fictional login and transaction
-events, assigns risk levels using transparent rules, and
-displays the results in a Streamlit dashboard.
+**Note:** This is a learning and portfolio project. It does not connect to real banking systems and is not intended for production fraud detection.
 
 ## Features
 
-- Simulated banking security events
-- Rule-based risk classification
-- High, medium, and low risk levels
-- Event type and risk filters
-- Dashboard metrics and a bar chart
-- CSV export for further investigation
-- Suggested defensive actions
+- **Rule-based detection:** Identifies events involving repeated failed login attempts, high-value transactions, and unknown countries.
+- **Risk classification:** Assigns Low, Medium, or High risk based on the detection rules.
+- **Dataset validation:** Checks for missing columns, duplicate event IDs, invalid values, and unexpected labels.
+- **Interactive dashboard:** Displays event summaries and suspicious activity.
+- **Incident timeline:** Presents medium- and high-risk events in chronological order using simulated timestamps.
+- **Investigation recommendations:** Provides suggested actions for reviewing detected events.
+- **CSV incident report:** Allows suspicious events and their investigation details to be exported.
+- **Automated tests:** Includes unit tests for detection and dataset validation.
 
-## Detection Rules
-
-| Condition | Risk level | Reason |
-|---|---|---|
-| 5 or more failed logins | Medium | Repeated authentication failures |
-| Transaction amount of 100000 or more | Medium | High-value transaction |
-| Country recorded as Unknown | Medium | Location requires verification |
-| Two or more conditions match | High | Multiple risk indicators |
-
-These are demonstration thresholds, not validated banking
-fraud rules. A flagged event is not proof of an attack.
-
-## Technologies
+## Technology Stack
 
 - Python
 - Pandas
 - Streamlit
+- unittest
 
-## Requirements
+## Project Structure
 
-Install Python 3 and a terminal that can run Python commands.
+```text
+cyberwar-banking-defense/
+├── app.py
+├── detector.py
+├── validate_data.py
+├── test_detector.py
+├── test_validate_data.py
+├── requirements.txt
+├── README.md
+└── data/
+    └── banking_events.csv
+```
 
-## Run Locally
+## Installation
 
-Create and activate a virtual environment, then install
-the required packages.
+### 1. Clone the repository
 
-    python -m venv .venv
-    .venv\Scripts\activate
-    python -m pip install -r requirements.txt
-    python -m streamlit run app.py
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd cyberwar-banking-defense
+```
 
-## Limitations
+Replace `YOUR_GITHUB_REPOSITORY_URL` with your actual GitHub repository URL.
 
-This version uses a small, fixed set of fictional events.
-It does not connect to banking APIs, detect real-time attacks,
-or verify whether transactions are fraudulent.
+### 2. Create a virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+### 3. Install dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+## Run the Application
+
+```bash
+python -m streamlit run app.py
+```
+
+Streamlit will provide a local URL that you can open in your browser.
+
+## Run Automated Tests
+
+```bash
+python -m unittest -v
+```
+
+The detection and validation tests should pass before changes are considered complete.
+
+## Detection Rules
+
+| Condition | Example response |
+|---|---|
+| Repeated failed login attempts | Review authentication logs and verify account activity |
+| High-value transaction | Verify the transaction against approved activity |
+| Unknown country | Review the location and investigate unusual access |
+
+Risk classification is based on the number of triggered rules. Multiple triggered rules result in a High risk classification; one triggered rule results in Medium risk; no triggered rules results in Low risk.
+
+## Evaluation and Limitations
+
+The project includes a synthetic dataset with reference labels for demonstrating evaluation metrics. These labels are illustrative and should not be treated as verified fraud outcomes.
+
+Performance metrics calculated from this dataset are not evidence of real-world banking detection accuracy. The detection rules are predefined rather than trained machine-learning models.
+
+The timestamps used in the incident timeline are simulated. Investigation recommendations are suggestions for a human reviewer and do not automatically block accounts or transactions.
 
 ## Future Improvements
 
-- Load events from a CSV file
-- Add timestamps and event history
-- Create unit tests for the detection rules
-- Evaluate detection accuracy on a labelled synthetic dataset
-- Add a more detailed incident investigation report
+- Test detection rules on larger, carefully documented datasets.
+- Evaluate performance on independently verified reference labels.
+- Explore anomaly detection and machine-learning methods.
+- Add configurable thresholds and more detailed audit logs.
+- Improve security testing and application error handling.
 
-## Responsible Use
+## Disclaimer
 
-This project is for educational and defensive cybersecurity
-learning. It uses synthetic data and is not intended for
-production banking environments.
+This project is intended for educational purposes and cybersecurity portfolio development. It does not provide financial advice, guarantee fraud detection, or replace professional banking security controls.
+## Dashboard Preview
 
-## Testing
 
-The detection engine has unit tests for:
+## Dashboard Screenshots
 
-- Normal events
-- Repeated failed login attempts
-- High-value transactions
-- Unknown country values
-- Events matching multiple rules
+### 1. Application Overview
+![Application Overview](db1.png)
 
-Run the tests with:
+### 2. Security Overview
+![Security Overview](db2.png)
 
-    python -m unittest -v test_detector.py
+### 3. Incident Timeline
+![Incident Timeline](db3.png)
 
-The tests verify the expected output for these defined
-scenarios. They do not establish real-world fraud detection
-accuracy.
+### 4. Suspicious Activity Detection
+![Suspicious Activity Detection](db4.png)
 
-## Incident Investigation
+### 5. Incident Investigation
+![Incident Investigation](db5.png)
 
-The dashboard includes an incident investigation panel for
-events that trigger one or more detection rules.
-
-An analyst can select an event and review its risk level,
-event type, account reference, and detection reasons.
-The application also displays suggested defensive actions
-based on the matching rules.
-
-The recommendations are advisory. The application does not
-automatically block accounts or transactions.
-
-## Current Limitations
-
-- The dataset is small and synthetic.
-- Detection thresholds are illustrative.
-- Reference labels are manually assigned.
-- The application is not connected to real banking systems.
-- Results do not establish real-world fraud detection accuracy.
+### 6. Downloadable Incident Report
+![Downloadable Incident Report](db6.png)
