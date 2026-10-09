@@ -2,6 +2,7 @@
 import pandas as pd
 import streamlit as st
 from datetime import datetime
+from detector import classify_event
 
 st.set_page_config(
     page_title="Cyberwar Banking Defense",
@@ -81,31 +82,16 @@ events = [
 
 df = pd.DataFrame(events)
 
-# Apply transparent rules to each simulated event.
-def classify_event(row):
-    reasons = []
 
-    if row["failed_logins"] >= 5:
-        reasons.append("Repeated failed login attempts")
-
-    if row["amount"] >= 100000:
-        reasons.append("High-value transaction")
-
-    if row["country"] == "Unknown":
-        reasons.append("Unknown country")
-
-    if reasons:
-        return pd.Series(
-            ["High" if len(reasons) >= 2 else "Medium",
-             "; ".join(reasons)]
-        )
-
-    return pd.Series(["Low", "No rule triggered"])
-
-
-df[["risk_level", "alert_reason"]] = df.apply(
-    classify_event, axis=1
+df[["risk_level", "alert_reason"]] = pd.DataFrame(
+    df.apply(
+        lambda row: classify_event(row),
+        axis=1
+    ).tolist(),
+    index=df.index,
+    columns=["risk_level", "alert_reason"],
 )
+
 
 st.sidebar.header("Investigation filters")
 
