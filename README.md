@@ -76,3 +76,21 @@ or verify whether transactions are fraudulent.
 This project is for educational and defensive cybersecurity
 learning. It uses synthetic data and is not intended for
 production banking environments.
+
+## Testing
+
+The detection engine has unit tests for:
+
+- Normal events
+- Repeated failed login attempts
+- High-value transactions
+- Unknown country values
+- Events matching multiple rules
+
+Run the tests with:
+
+    python -m unittest -v test_detector.py
+
+The tests verify the expected output for these defined
+scenarios. They do not establish real-world fraud detection
+accuracy.
