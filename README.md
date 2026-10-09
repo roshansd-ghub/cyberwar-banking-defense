@@ -94,3 +94,24 @@ Run the tests with:
 The tests verify the expected output for these defined
 scenarios. They do not establish real-world fraud detection
 accuracy.
+
+## Incident Investigation
+
+The dashboard includes an incident investigation panel for
+events that trigger one or more detection rules.
+
+An analyst can select an event and review its risk level,
+event type, account reference, and detection reasons.
+The application also displays suggested defensive actions
+based on the matching rules.
+
+The recommendations are advisory. The application does not
+automatically block accounts or transactions.
+
+## Current Limitations
+
+- The dataset is small and synthetic.
+- Detection thresholds are illustrative.
+- Reference labels are manually assigned.
+- The application is not connected to real banking systems.
+- Results do not establish real-world fraud detection accuracy.

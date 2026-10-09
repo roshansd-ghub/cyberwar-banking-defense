@@ -160,6 +160,64 @@ st.download_button(
     mime="text/csv",
 )
 
+st.subheader("Incident investigation")
+
+# Show events that triggered at least one detection rule.
+alerts = df[df["risk_level"] != "Low"].copy()
+
+if alerts.empty:
+    st.info("No events currently match the detection rules.")
+else:
+    st.write(
+        "Select an event to inspect its detection reasons "
+        "and suggested response."
+    )
+
+    selected_event = st.selectbox(
+        "Select event ID",
+        alerts["event_id"].tolist(),
+    )
+
+    incident = alerts[
+        alerts["event_id"] == selected_event
+    ].iloc[0]
+
+    st.markdown(f"### Event: {incident['event_id']}")
+
+    left, right = st.columns(2)
+
+    left.metric("Risk level", incident["risk_level"])
+    right.metric("Event type", incident["event_type"])
+
+    st.write("**Account reference:**", incident["account"])
+    st.write("**Event status:**", incident["status"])
+    st.write("**Detection reason:**", incident["alert_reason"])
+
+    reason = incident["alert_reason"].lower()
+
+    if "failed login" in reason:
+        st.warning(
+            "Suggested response: review authentication logs, "
+            "check for repeated attempts, and consider rate limiting."
+        )
+
+    if "high-value transaction" in reason:
+        st.warning(
+            "Suggested response: verify the transaction against "
+            "authorized limits and review the event for possible fraud."
+        )
+
+    if "unknown country" in reason:
+        st.warning(
+            "Suggested response: verify location and device signals "
+            "before escalating the event."
+        )
+
+    st.caption(
+        "These are simulated alerts. Investigate the evidence "
+        "before treating an event as a confirmed incident."
+    )
+
 st.subheader("Recommended defensive actions")
 
 st.markdown(
