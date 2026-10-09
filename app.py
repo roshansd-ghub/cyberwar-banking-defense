@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 from detector import classify_event
-
+from validate_data import validate_events
 st.set_page_config(
     page_title="Cyberwar Banking Defense",
     page_icon="🛡️",
@@ -20,6 +20,18 @@ from pathlib import Path
 DATA_FILE = Path(__file__).parent / "data" / "banking_events.csv"
 
 df = pd.read_csv(DATA_FILE)
+# Check data quality before running detection rules.
+data_issues = validate_events(df)
+
+if data_issues:
+    st.error("Dataset validation failed.")
+
+    for issue in data_issues:
+        st.write(f"- {issue}")
+
+    st.stop()
+
+st.success("Dataset validation passed.")
 df[["risk_level", "alert_reason"]] = pd.DataFrame(
     df.apply(
         lambda row: classify_event(row),
